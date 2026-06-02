@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>给李若晴的祝福</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @font-face {
+    font-family: 'Blessing';
+    src: local('PingFang SC'), local('Microsoft YaHei'), local('Noto Sans SC');
+  }
+
+  body {
+    font-family: 'Blessing', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #44268e 50%, #6b3fa0 70%, #2d1b69 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  canvas#particleCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 40px 20px 10px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255, 180, 255, 0.8), 0 0 40px rgba(200, 100, 255, 0.4);
+    letter-spacing: 4px;
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+
+  .header .subtitle {
+    font-size: 14px;
+    color: rgba(255, 220, 255, 0.7);
+    margin-top: 8px;
+    letter-spacing: 2px;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.03); opacity: 0.9; }
+  }
+
+  .blessing-area {
+    position: relative;
+    z-index: 5;
+    height: calc(100vh - 200px);
+    overflow: hidden;
+  }
+
+  .blessing-card {
+    position: absolute;
+    padding: 14px 22px;
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #fff;
+    max-width: 80%;
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    animation: cardIn 0.25s ease forwards, cardFloat 3s ease-in-out 0.25s infinite;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .card-style-0 {
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.85), rgba(255, 142, 83, 0.85));
+    border: 1px solid rgba(255, 150, 150, 0.3);
+  }
+  .card-style-1 {
+    background: linear-gradient(135deg, rgba(120, 115, 255, 0.85), rgba(80, 200, 255, 0.85));
+    border: 1px solid rgba(150, 180, 255, 0.3);
+  }
+  .card-style-2 {
+    background: linear-gradient(135deg, rgba(255, 180, 50, 0.85), rgba(255, 120, 100, 0.85));
+    border: 1px solid rgba(255, 200, 120, 0.3);
+  }
+  .card-style-3 {
+    background: linear-gradient(135deg, rgba(100, 220, 150, 0.85), rgba(80, 180, 220, 0.85));
+    border: 1px solid rgba(120, 230, 180, 0.3);
+  }
+  .card-style-4 {
+    background: linear-gradient(135deg, rgba(220, 100, 255, 0.85), rgba(255, 140, 200, 0.85));
+    border: 1px solid rgba(230, 150, 255, 0.3);
+  }
+  .card-style-5 {
+    background: linear-gradient(135deg, rgba(255, 200, 100, 0.85), rgba(255, 160, 60, 0.85));
+    border: 1px solid rgba(255, 220, 140, 0.3);
+  }
+
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes cardFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.02); }
+  }
+
+  .card-exit {
+    animation: cardOut 0.3s ease forwards !important;
+  }
+
+  @keyframes cardOut {
+    to { opacity: 0; transform: translateY(-40px) scale(0.8); }
+  }
+
+  .heart-burst {
+    position: fixed;
+    font-size: 20px;
+    pointer-events: none;
+    z-index: 20;
+    animation: heartRise 2s ease-out forwards;
+  }
+
+  @keyframes heartRise {
+    0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-200px) scale(0.3) rotate(30deg); }
+  }
+
+  .controls {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(15, 5, 30, 0.9), transparent);
+  }
+
+  .btn {
+    padding: 12px 36px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn:active::after {
+    left: 100%;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, #ff6b9d, #ff8e53);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+  }
+
+  .btn-pause {
+    background: linear-gradient(135deg, #7873ff, #50c8ff);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(120, 115, 255, 0.4);
+  }
+
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  .counter {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 20;
+    color: rgba(255, 220, 255, 0.6);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .moon {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff8dc, #ffeaa7, #fdcb6e);
+    box-shadow: 0 0 30px rgba(255, 234, 167, 0.5), 0 0 60px rgba(255, 220, 100, 0.2);
+    z-index: 1;
+    animation: moonGlow 4s ease-in-out infinite;
+  }
+
+  @keyframes moonGlow {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 234, 167, 0.5), 0 0 60px rgba(255, 220, 100, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(255, 234, 167, 0.7), 0 0 80px rgba(255, 220, 100, 0.3); }
+  }
+
+  .shooting-star {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: #fff;
+    border-radius: 50%;
+    z-index: 1;
+    animation: shoot 1s linear forwards;
+  }
+
+  .shooting-star::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+    transform-origin: left center;
+    transform: rotate(0deg);
+  }
+
+  @keyframes shoot {
+    0% { opacity: 1; transform: translate(0, 0); }
+    100% { opacity: 0; transform: translate(200px, 120px); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+<div class="moon"></div>
+
+<div class="header">
+  <h1>致 李若晴</h1>
+  <div class="subtitle">愿所有美好都如约而至</div>
+</div>
+
+<div class="blessing-area" id="blessingArea"></div>
+
+<div class="counter" id="counter">已送出 0 条祝福</div>
+
+<div class="controls">
+  <button class="btn btn-start" id="btnStart" onclick="startBlessing()">开始祝福</button>
+  <button class="btn btn-pause" id="btnPause" onclick="pauseBlessing()" style="display:none;">暂停</button>
+</div>
+
+<script>
+const blessings = [
+  "李若晴，愿你每一天都被温柔以待",
+  "李若晴，愿你眼里有星辰，心中有暖阳",
+  "李若晴，愿你的笑容比花还灿烂",
+  "李若晴，愿你所有的努力都不被辜负",
+  "李若晴，愿你所到之处皆是花开",
+  "李若晴，愿你的世界永远充满色彩",
+  "李若晴，愿你被世界温柔相待",
+  "李若晴，愿你活成自己想要的模样",
+  "李若晴，愿你心之所向，步步生花",
+  "李若晴，愿你拥有不期而遇的温暖",
+  "李若晴，愿你眉眼如初，岁月如故",
+  "李若晴，愿你永远被爱包围",
+  "李若晴，愿你前路浩荡，万事可期",
+  "李若晴，愿你所求皆如愿，所行皆坦途",
+  "李若晴，愿你心中有梦，眼里有光",
+  "李若晴，愿你的生活处处是惊喜",
+  "李若晴，愿你一生被宠爱",
+  "李若晴，愿你每天都元气满满",
+  "李若晴，愿你遇见的都是美好",
+  "李若晴，愿你开心到起飞",
+  "李若晴，愿你永远年轻，永远热泪盈眶",
+  "李若晴，愿你三冬暖，春不寒",
+  "李若晴，愿你天黑有灯，下雨有伞",
+  "李若晴，愿你一路上有良人相伴",
+  "李若晴，愿你所念之人平安喜乐",
+  "李若晴，愿你归来仍是少年",
+  "李若晴，愿你的每个明天都比今天好",
+  "李若晴，愿你被幸福追着跑",
+  "李若晴，愿你成为自己的太阳",
+  "李若晴，愿你所愿皆成真",
+  "李若晴，愿你永远做自己的女王",
+  "李若晴，愿你的快乐不用假装",
+  "李若晴，愿你被偏爱，有例外",
+  "李若晴，愿你所有深情都不被辜负",
+  "李若晴，愿你往后余生，皆是晴天",
+  "李若晴，愿你眼里有光，笑里坦荡",
+  "李若晴，愿你的每一天都值得纪念",
+  "李若晴，愿你永远保持热爱",
+  "李若晴，愿你所到之处都是鲜花盛开",
+  "李若晴，愿你的每一步都走在幸福里",
+  "李若晴，愿你有铠甲也有软肋",
+  "李若晴，愿你此生尽兴，不负韶华",
+  "李若晴，愿你有人懂你的欲言又止",
+  "李若晴，愿你所遇皆温柔",
+  "李若晴，愿你永远闪闪发光",
+  "李若晴，愿你被时间温柔以待",
+  "李若晴，愿你事事顺心，岁岁平安",
+  "李若晴，愿你所爱之人就在身边",
+  "李若晴，愿你永远相信美好的事情即将发生",
+  "李若晴，愿你的人生如诗如画",
+  "李若晴，愿你被偏爱到有恃无恐",
+  "李若晴，愿你一生努力一生被爱",
+  "李若晴，愿你永远光芒万丈",
+  "李若晴，愿你平安喜乐，得偿所愿",
+  "李若晴，愿你的运气一直在线",
+  "李若晴，愿你不负时光不负己",
+  "李若晴，愿你每一天都有小确幸",
+  "李若晴，愿你被全世界温柔相拥",
+  "李若晴，愿你梦想成真，未来可期",
+  "李若晴，愿你永远是那个最可爱的自己",
+];
+
+const area = document.getElementById('blessingArea');
+const counterEl = document.getElementById('counter');
+const btnStart = document.getElementById('btnStart');
+const btnPause = document.getElementById('btnPause');
+
+let running = false;
+let timer = null;
+let count = 0;
+let usedIndices = [];
+
+function getRandomBlessing() {
+  if (usedIndices.length >= blessings.length) usedIndices = [];
+  let idx;
+  do { idx = Math.floor(Math.random() * blessings.length); } while (usedIndices.includes(idx));
+  usedIndices.push(idx);
+  return blessings[idx];
+}
+
+function createCard() {
+  const cards = area.querySelectorAll('.blessing-card:not(.card-exit)');
+  if (cards.length >= 12) {
+    const oldest = cards[0];
+    oldest.classList.add('card-exit');
+    setTimeout(() => oldest.remove(), 300);
+  }
+
+  const card = document.createElement('div');
+  const styleIdx = Math.floor(Math.random() * 6);
+  card.className = `blessing-card card-style-${styleIdx}`;
+
+  const padding = 20;
+  const areaW = area.offsetWidth;
+  const areaH = area.offsetHeight;
+  const cardMaxW = areaW * 0.8;
+  const x = padding + Math.random() * (areaW - cardMaxW - padding * 2);
+  const y = 10 + Math.random() * (areaH - 100);
+
+  card.style.left = x + 'px';
+  card.style.top = y + 'px';
+  card.style.animationDelay = `0s, ${0.6 + Math.random() * 0.5}s`;
+  card.textContent = getRandomBlessing();
+
+  area.appendChild(card);
+
+  count++;
+  counterEl.textContent = `已送出 ${count} 条祝福`;
+
+  // Heart burst effect
+  spawnHearts(6);
+}
+
+function spawnHearts(n) {
+  for (let i = 0; i < n; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart-burst';
+    const hearts = ['💖', '💕', '✨', '🌟', '💫', '💝', '🌸', '💗'];
+    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    heart.style.left = (20 + Math.random() * 60) + 'vw';
+    heart.style.top = (40 + Math.random() * 40) + 'vh';
+    heart.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 2500);
+  }
+}
+
+function startBlessing() {
+  if (running) return;
+  running = true;
+  btnStart.style.display = 'none';
+  btnPause.style.display = 'inline-block';
+  createCard();
+  scheduleNext();
+}
+
+function scheduleNext() {
+  if (!running) return;
+  const delay = 300 + Math.random() * 200;
+  timer = setTimeout(() => {
+    createCard();
+    scheduleNext();
+  }, delay);
+}
+
+function pauseBlessing() {
+  running = false;
+  clearTimeout(timer);
+  btnPause.style.display = 'none';
+  btnStart.style.display = 'inline-block';
+  btnStart.textContent = '继续祝福';
+}
+
+// Particle background
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2.5 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = -Math.random() * 0.5 - 0.1;
+    this.opacity = Math.random() * 0.6 + 0.2;
+    this.twinkleSpeed = Math.random() * 0.02 + 0.01;
+    this.twinkleOffset = Math.random() * Math.PI * 2;
+  }
+  update(t) {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.opacity = 0.2 + 0.4 * Math.abs(Math.sin(t * this.twinkleSpeed + this.twinkleOffset));
+    if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) this.reset();
+    if (this.y < -10) this.y = canvas.height + 10;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 230, 255, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+let animTime = 0;
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  animTime++;
+  particles.forEach(p => { p.update(animTime); p.draw(); });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// Shooting stars
+function spawnShootingStar() {
+  const star = document.createElement('div');
+  star.className = 'shooting-star';
+  star.style.left = Math.random() * 60 + 'vw';
+  star.style.top = Math.random() * 30 + 'vh';
+  document.body.appendChild(star);
+  setTimeout(() => star.remove(), 1000);
+}
+setInterval(() => {
+  if (Math.random() < 0.3) spawnShootingStar();
+}, 3000);
+</script>
+</body>
+</html>
